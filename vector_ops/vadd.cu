@@ -1,4 +1,5 @@
 #include "bits/stdc++.h"
+#include "../helper/error.cuh"
 
 using namespace std;
 
@@ -17,9 +18,9 @@ int main() {
     int n = nums_n[i];
 
     float *d_a, *d_b, *d_c;
-    cudaMalloc((void **)&d_a, n * sizeof(float));
-    cudaMalloc((void **)&d_a, n * sizeof(float));
-    cudaMalloc((void **)&d_a, n * sizeof(float));
+    CHECK(cudaMalloc((void **)&d_a, n * sizeof(float)));
+    CHECK(cudaMalloc((void **)&d_b, n * sizeof(float)));
+    CHECK(cudaMalloc((void **)&d_c, n * sizeof(float)));
 
     vadd<<<(n + 256) / 256, 256>>>(d_a, d_b, d_c, n);
 
