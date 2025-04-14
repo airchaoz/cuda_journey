@@ -10,7 +10,10 @@ __global__ void vadd(float *a, float *b, float *c, int N) {
   }
 }
 
-void test_profermance(int n) {
+void test_performance(int n) {
+
+  int block_size = 256;
+  int grid_size = (n + block_size - 1) / block_size;
 
   float *h_a = (float *)malloc(n * sizeof(float));
   float *h_b = (float *)malloc(n * sizeof(float));
@@ -37,7 +40,7 @@ void test_profermance(int n) {
 
   int test_rounds = 5;
   for (int i = 0; i < test_rounds; i++) {
-    vadd<<<(n + 256) / 256, 256>>>(d_a, d_b, d_c, n);
+    vadd<<<grid_size, block_size>>>(d_a, d_b, d_c, n);
   }
 
   CHECK(cudaMemcpy(h_c, d_c, n * sizeof(float), cudaMemcpyDeviceToHost));
@@ -102,7 +105,7 @@ int main() {
   int n_size = sizeof(nums_n) / sizeof(int);
 
   for (int i = 0; i < n_size; i++) {
-    test_profermance(nums_n[i]);
+    test_performance(nums_n[i]);
     test_max_err(nums_n[i]);
   }
 }
