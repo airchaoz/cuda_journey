@@ -3,10 +3,28 @@
 
 using namespace std;
 
+#define FLOAT4(x) (reinterpret_cast<float4*>(&(x))[0])
+
 __global__ void vadd(float *a, float *b, float *c, int N) {
   int tid = blockDim.x * blockIdx.x + threadIdx.x;
   if (tid < N) {
     c[tid] = a[tid] + b[tid];
+  }
+}
+
+__global__ void vadd_f32x4(float *a, float *b, float *c, int N) {
+  int tid = 4 * (blockDim.x * blockIdx.x + threadIdx.x);
+  if (tid < N) {
+    float4 reg_a = FLOAT4(a[tid]);
+    float4 reg_b = FLOAT4(a[tid]);
+    float4 reg_c = FLOAT4(a[tid]);
+
+    reg_c.x = reg_a.x + reg_b.x;
+    reg_c.y = reg_a.y + reg_b.y;
+    reg_c.z = reg_a.z + reg_b.z;
+    reg_c.w = reg_a.w + reg_b.w;
+
+    FLOAT4(c[tid]) = reg_c;
   }
 }
 
