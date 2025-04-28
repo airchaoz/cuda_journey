@@ -1,4 +1,5 @@
 #include "bits/stdc++.h"
+#include "cuda_fp16.h"
 
 using namespace std;
 
@@ -22,5 +23,12 @@ __global__ void relu_f32x4(float *x, float *y, int N) {
         reg_a.w = fmaxf(reg_a.w, 0.0f);
 
         FLOAT4(y[tid]) = reg_a;
+    }
+}
+
+__global__ void relu_f16(half *x, half *y, int N) {
+    int tid = blockDim.x * blockIdx.x + threadIdx.x;
+    if (tid < N) {
+        y[tid] = __hmax(__float2half(0.f), x[tid]);
     }
 }
